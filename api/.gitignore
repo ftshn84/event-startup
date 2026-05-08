@@ -1,5 +1,6 @@
-node_modules
+node_modules/
 .env
+.knex/
 # Ignore local SQLite database files
 # If you intentionally want to version a database file,
 # remove this rule and commit it explicitly.
