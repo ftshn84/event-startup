@@ -2,22 +2,40 @@
 
 ```mermaid
 erDiagram
+
     EVENTS {
         int id PK
-        decimal price
-        string currency
         string title
         text description
-        timestamptz created_at
-        timestamptz updated_at
+        datetime date
+        string venue
+        decimal price
+        int capacity
+        datetime created_at
+        datetime updated_at 
     }
-     USERS {
+
+    USERS {
         int id PK
-        string full_name
+        string name
         string email
-        timestamptz created_at
-        timestamptz updated_at
+        string password
+        datetime created_at
+        datetime updated_at    
     }
+
+    ORDERS {
+        int id PK
+        int user_id FK
+        int event_id FK
+        boolian isPaid "default: false"
+        int quantity
+        datetime created_at
+        datetime updated_at
+    }
+
+    USERS ||--o{ ORDERS : places
+    EVENTS ||--o{ ORDERS : included_in
 ```
 
 ## SQL Queries
