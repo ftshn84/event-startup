@@ -11,6 +11,12 @@ erDiagram
         timestamptz created_at
         timestamptz updated_at
     }
+     USERS {
+        int id PK
+        string email
+        text name
+        timestamptz created_at
+    }
 ```
 
 
