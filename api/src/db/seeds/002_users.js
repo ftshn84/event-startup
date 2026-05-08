@@ -8,18 +8,21 @@ export async function seed(knex) {
         .insert([
             {
                 id: 1,
-                full_name: "John Doe",
+                name: "John Doe",
                 email: "john.doe@example.com",
+                password: "password123",
             },
             {
                 id: 2,
-                full_name: "Jane Smith",
+                name: "Jane Smith",
                 email: "jane.smith@example.com",
+                password: "password456",
             },
             {
                 id: 3,
-                full_name: "Alice Johnson",
+                name: "Alice Johnson",
                 email: "alice.johnson@example.com",
+                password: "password789",
             }
         ])
         .onConflict("id")
