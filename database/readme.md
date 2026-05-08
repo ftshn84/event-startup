@@ -45,7 +45,7 @@ erDiagram
 Get all events:
 
 ```sql
-SELECT id, price, currency, title, description, created_at, updated_at
+SELECT *
 FROM events
 ORDER BY id ASC;
 ```
@@ -53,9 +53,9 @@ ORDER BY id ASC;
 Get event by ID:
 
 ```sql
-SELECT id, price, currency, title, description, created_at, updated_at
+SELECT *
 FROM events
-WHERE id = 1;
+WHERE id = @id;
 ```
 
 ### Users
@@ -63,7 +63,7 @@ WHERE id = 1;
 Get all users:
 
 ```sql
-SELECT id, full_name, email, created_at, updated_at
+SELECT *
 FROM users
 ORDER BY id ASC;
 ```
@@ -71,9 +71,29 @@ ORDER BY id ASC;
 Get user by ID:
 
 ```sql
-SELECT id, full_name, email, created_at, updated_at
+SELECT *
 FROM users
-WHERE id = 1;
+WHERE id = @id;
 ```
 
+### Orders
 
+Get all orders:
+
+```sql
+SELECT *
+FROM orders
+ORDER BY id ASC;
+```
+
+Get order by ID:
+
+```sql
+SELECT *
+FROM orders
+WHERE id = @id;
+```
+
+## Exported ERD diagram from PostgreSQL by pgAdmin4
+
+![PostgreSQL ERD](./postgreSQL-erd-diagram.png)
