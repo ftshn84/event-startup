@@ -13,9 +13,8 @@ erDiagram
     }
      USERS {
         int id PK
+        string full_name
         string email
-        text name
-        timestamptz created_at
     }
 ```
 
