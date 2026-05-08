@@ -1,4 +1,4 @@
-## Entity Relationship Diagram (ERD)
+## Entity Relationship Diagram With Mermaild (ERD)
 
 ```mermaid
 erDiagram
@@ -97,3 +97,5 @@ WHERE id = @id;
 ## Exported ERD diagram from PostgreSQL by pgAdmin4
 
 ![PostgreSQL ERD](./postgreSQL-erd-diagram.png)
+
+See the [postgreSQL-erd-diagram.pgerd](postgreSQL-erd-diagram.pgerd) as the pgAdmin ERD source file.
