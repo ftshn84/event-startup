@@ -14,7 +14,7 @@ erDiagram
     }
 
 
- app-USERS {
+ APP-USERS {
         int id PK
         string email
         text name
