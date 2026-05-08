@@ -1,3 +1,4 @@
+# Event Database Schema
 ## Entity Relationship Diagram (ERD)
 
 ```mermaid
@@ -12,5 +13,11 @@ erDiagram
         timestamptz updated_at
     }
 ```
+USERS {
+        int id PK
+        string email
+        text name
+        timestamptz created_at
+    }
 
 
