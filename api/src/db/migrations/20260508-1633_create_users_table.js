@@ -6,6 +6,7 @@ export async function up(knex) {
         t.increments("id").primary();
         t.string("full_name", 50).notNullable();
         t.string("email", 50).notNullable();
+        t.timestamps(true, true);
     });
 }
 

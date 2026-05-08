@@ -2,9 +2,9 @@
  * @param {import("knex").Knex} knex
  */
 export async function seed(knex) {
-    await knex("event").del();
+    await knex("events").del();
 
-    await knex("event")
+    await knex("events")
         .insert([
             {
                 id: 1,

@@ -2,7 +2,7 @@
 
 ```mermaid
 erDiagram
-    EVENT {
+    EVENTS {
         int id PK
         decimal price
         string currency
@@ -15,6 +15,8 @@ erDiagram
         int id PK
         string full_name
         string email
+        timestamptz created_at
+        timestamptz updated_at
     }
 ```
 

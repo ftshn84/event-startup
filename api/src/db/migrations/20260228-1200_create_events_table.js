@@ -2,7 +2,7 @@
  * @param {import("knex").Knex} knex
  */
 export async function up(knex) {
-    await knex.schema.createTable("event", (t) => {
+    await knex.schema.createTable("events", (t) => {
         t.increments("id").primary();
         t.decimal("price", 10, 2).notNullable();
         t.string("currency", 3).notNullable();
