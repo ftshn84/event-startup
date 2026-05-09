@@ -12,7 +12,7 @@ The goal of [this assignment project](https://program.hackyourfuture.dk/course-c
 
 This is a monolithic repository containing:
 
-* **api** – The server-side API handling business logic, authentication, and data management
+* **api** – The server-side API handling business logic, authentication, and data management. [Swagger UI]( localhost:3001/docs/)
 * **database** – PostgreSQL database diagram
 * **postman** – Postman collection of API
 
