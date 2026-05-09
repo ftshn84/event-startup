@@ -1,7 +1,9 @@
 ## Entity Relationship Diagram With Mermaild (ERD)
 
 ```mermaid
-erDiagram
+
+
+    erDiagram
 
     EVENTS {
         int id PK
@@ -14,7 +16,7 @@ erDiagram
         datetime created_at
         datetime updated_at 
     }
-
+    
     USERS {
         int id PK
         string name
@@ -26,16 +28,23 @@ erDiagram
 
     ORDERS {
         int id PK
-        int user_id FK
-        int event_id FK
-        boolian isPaid "default: false"
-        int quantity
+        int user_id FK "nullable"
+        decimal total_amount 
+        boolian ispaid "default: false"
         datetime created_at
         datetime updated_at
     }
+    ORDER_ITEMS {
+        int id PK
+        int order_id FK
+        int event_id FK
+        int quantity
+        decimal price
+    }
 
-    USERS ||--o{ ORDERS : places
-    EVENTS ||--o{ ORDERS : included_in
+    USERS ||--o{ ORDERS : place
+    EVENTS ||--o{ ORDER_ITEMS : included_in
+    ORDERS ||--o{ ORDER_ITEMS : has
 ```
 
 ## SQL Queries
@@ -78,20 +87,40 @@ WHERE id = @id;
 
 ### Orders
 
-Get all orders:
+Get orders by pagination:
 
 ```sql
 SELECT *
 FROM orders
-ORDER BY id ASC;
+ORDER BY created_at DESC, id DESC
+LIMIT @limit OFFSET @offset;
 ```
 
-Get order by ID:
+Get full order details by ID (with user, items, and events):
 
 ```sql
-SELECT *
-FROM orders
-WHERE id = @id;
+SELECT
+    o.id AS order_id,
+    o.user_id,
+    u.name AS user_name,
+    u.email AS user_email,
+    o.total_amount,
+    o.ispaid,
+    o.created_at,
+    o.updated_at,
+    oi.id AS order_item_id,
+    oi.event_id,
+    e.title AS event_title,
+    e.venue AS event_venue,
+    e.date AS event_date,
+    oi.quantity,
+    oi.price AS item_price
+FROM orders AS o
+LEFT JOIN users AS u ON u.id = o.user_id
+LEFT JOIN order_items AS oi ON oi.order_id = o.id
+LEFT JOIN events AS e ON e.id = oi.event_id
+WHERE o.id = @order_id
+ORDER BY oi.id ASC;
 ```
 
 ## Exported ERD diagram from PostgreSQL by pgAdmin4
