@@ -6,20 +6,12 @@ export async function up(knex) {
         t.increments("id").primary();
         t.integer("user_id")
             .unsigned()
-            .notNullable()
             .references("id")
             .inTable("users")
             .onUpdate("CASCADE")
-            .onDelete("CASCADE");
-        t.integer("event_id")
-            .unsigned()
-            .notNullable()
-            .references("id")
-            .inTable("events")
-            .onUpdate("CASCADE")
-            .onDelete("CASCADE");
+            .onDelete("SET NULL");
+        t.decimal("total_amount", 10, 2).notNullable();
         t.boolean("ispaid").notNullable().defaultTo(false);
-        t.integer("quantity").notNullable();
         t.timestamps(true, true);
     });
 }
