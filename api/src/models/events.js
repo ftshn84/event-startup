@@ -1,6 +1,6 @@
 import db from "#configs/database.js";
 
-const TABLE = "event";
+const TABLE = "events";
 
 /**
  * Event model (MVC example)
