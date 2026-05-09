@@ -258,21 +258,21 @@ If needed, modify or remove the existing migrations and seeds to match your data
 
 From your Render.com Dashboard page, click the tile called PostGreSQL.
 
-![](../images/render/database/step1.png)
+![](./images/render/database/step1.png)
 
 In the next screen, fill in the marked fields, then scroll down.
 
-![](../images/render/database/step2.png)
+![](./images/render/database/step2.png)
 
 Select the "Free" tier. Then click "Create".
 
 > Your database will be automatically deleted after 90 days, if you need it for longer simply recreate it following the same steps.
 
-![](../images/render/database/step3.png)
+![](./images/render/database/step3.png)
 
 On the next page, scroll down to the section "Connections".
 
-![](../images/render/database/step4.png)
+![](./images/render/database/step4.png)
 
 We need to copy the the following fields:
 
@@ -314,40 +314,40 @@ You can run `npm run dev` and visit `http://localhost:3001/api` to verify that y
 
 If you go back to your Dashboard you should now see your database in your list of deployed services. From here click "New" and then select "Web Service".
 
-![](../images/render/api/step5.png)
-![](../images/render/api/step6.png)
+![](./images/render/api/step5.png)
+![](./images/render/api/step6.png)
 
 We want to deploy from a Git repository, this is called GitOps. Each time we push a new commit to the Git repository, Render will update your deployed service.
 
-![](../images/render/api/step7.png)
+![](./images/render/api/step7.png)
 
 If you cannot find your Git repository, you may need to re-configure your Github account to allow Render to see the repository you want to deploy from.
 
-![](../images/render/api/step8.png)
+![](./images/render/api/step8.png)
 
 Click "Connect" for the repository you want to use (the one that is based on this template).
 
-![](../images/render/api/step9.png)
+![](./images/render/api/step9.png)
 
 In the next page, fill in all the required fields.
 
-![](../images/render/api/step10.png)
-![](../images/render/api/step11.png)
+![](./images/render/api/step10.png)
+![](./images/render/api/step11.png)
 
 When you reach the section about "Environment variables", click the button called "Add from .env" which opens a dialog. You can copy the content of your `.env` file into this dialog (except for the PORT variable), then click "Add variables".
 
-![](../images/render/api/step12.png)
-![](../images/render/api/step13.png)
+![](./images/render/api/step12.png)
+![](./images/render/api/step13.png)
 
 The page should look something like this after.  
 It's important here to change the value of the variable DB_USE_SSL from "false" to "true".  
 Finish up by clicking "Create Web Service".
 
-![](../images/render/api/step14.png)
+![](./images/render/api/step14.png)
 
 In the next screen you'll see the output of your build step which is downloading your code and deploying it.
 
-![](../images/render/api/step15.png)
+![](./images/render/api/step15.png)
 
 Once you see the text "Your service is live" you can test your API with Postman by using the deployed URL, which should be something like `https://hyf-template-api.onrender.com/api`. You should see the output the response from your "/" route.
 

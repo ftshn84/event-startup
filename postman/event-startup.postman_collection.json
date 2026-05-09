@@ -1,0 +1,31 @@
+{
+  "info": {
+    "_postman_id": "fa5f0164-d399-4ad2-8d16-dac54fd5b51c",
+    "name": "event-startup",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50815654",
+    "_collection_link": "https://go.postman.co/collection/50815654-fa5f0164-d399-4ad2-8d16-dac54fd5b51c?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "events",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/api/events",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "events"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

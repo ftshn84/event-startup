@@ -1,4 +1,8 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 const client = process.env.DB_CLIENT ?? "sqlite3";
+
 const defaultDbFilename =
     client === "sqlite3" ? "src/db/database.sqlite" : null;
 
