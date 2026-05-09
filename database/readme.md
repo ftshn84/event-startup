@@ -1,7 +1,9 @@
 ## Entity Relationship Diagram With Mermaild (ERD)
 
 ```mermaid
-erDiagram
+
+
+    erDiagram
 
     EVENTS {
         int id PK
@@ -14,6 +16,7 @@ erDiagram
         datetime created_at
         datetime updated_at 
     }
+    
 
     USERS {
         int id PK
@@ -27,15 +30,20 @@ erDiagram
     ORDERS {
         int id PK
         int user_id FK
-        int event_id FK
+        int item_id FK
         boolian isPaid "default: false"
-        int quantity
         datetime created_at
         datetime updated_at
     }
+    ORDER_ITEMS {
+        int id PK
+        int event_id FK
+        int quantity
+    }
 
     USERS ||--o{ ORDERS : places
-    EVENTS ||--o{ ORDERS : included_in
+    EVENTS ||--o{ ORDER_ITEMS : included_in
+    ORDER_ITEMS ||--o{ ORDERS : included_in
 ```
 
 ## SQL Queries
