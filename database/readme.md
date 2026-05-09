@@ -17,7 +17,6 @@
         datetime updated_at 
     }
     
-
     USERS {
         int id PK
         string name
@@ -29,21 +28,23 @@
 
     ORDERS {
         int id PK
-        int user_id FK
-        int item_id FK
-        boolian isPaid "default: false"
+        int user_id FK "nullable"
+        decimal total_amount 
+        boolian ispaid "default: false"
         datetime created_at
         datetime updated_at
     }
     ORDER_ITEMS {
         int id PK
+        int order_id FK
         int event_id FK
         int quantity
+        decimal price
     }
 
-    USERS ||--o{ ORDERS : places
+    USERS ||--o{ ORDERS : place
     EVENTS ||--o{ ORDER_ITEMS : included_in
-    ORDER_ITEMS ||--o{ ORDERS : included_in
+    ORDERS ||--o{ ORDER_ITEMS : has
 ```
 
 ## SQL Queries
