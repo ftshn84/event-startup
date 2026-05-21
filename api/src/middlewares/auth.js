@@ -20,40 +20,67 @@ function getJwtSecret() {
     return secret;
 }
 
+async function resolveAuthUserFromHeader(authHeader) {
+    if (!authHeader) {
+        return null;
+    }
+
+    if (!authHeader.startsWith("Bearer ")) {
+        throw createHttpError(401, "Authorization header must use Bearer token");
+    }
+
+    const token = authHeader.slice("Bearer ".length).trim();
+
+    if (!token) {
+        throw createHttpError(401, "Missing Bearer token");
+    }
+
+    const payload = jwt.verify(token, getJwtSecret());
+    const userId = Number(payload?.sub);
+
+    if (!Number.isInteger(userId) || userId <= 0) {
+        throw createHttpError(401, "Invalid token subject");
+    }
+
+    const user = await findUserById(userId);
+
+    if (!user) {
+        throw createHttpError(401, "Authenticated user no longer exists");
+    }
+
+    return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+    };
+}
+
 export async function requireAuth(req, res, next) {
     void res;
 
     try {
-        const authHeader = req.headers.authorization;
+        req.authUser = await resolveAuthUserFromHeader(req.headers.authorization);
 
-        if (!authHeader?.startsWith("Bearer ")) {
+        if (!req.authUser) {
             throw createHttpError(401, "Authorization header must use Bearer token");
         }
 
-        const token = authHeader.slice("Bearer ".length).trim();
-
-        if (!token) {
-            throw createHttpError(401, "Missing Bearer token");
+        next();
+    } catch (error) {
+        if (error?.name === "JsonWebTokenError" || error?.name === "TokenExpiredError") {
+            next(createHttpError(401, "Invalid or expired token"));
+            return;
         }
 
-        const payload = jwt.verify(token, getJwtSecret());
-        const userId = Number(payload?.sub);
+        next(error);
+    }
+}
 
-        if (!Number.isInteger(userId) || userId <= 0) {
-            throw createHttpError(401, "Invalid token subject");
-        }
+export async function optionalAuth(req, res, next) {
+    void res;
 
-        const user = await findUserById(userId);
-
-        if (!user) {
-            throw createHttpError(401, "Authenticated user no longer exists");
-        }
-
-        req.authUser = {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-        };
+    try {
+        req.authUser = await resolveAuthUserFromHeader(req.headers.authorization);
 
         next();
     } catch (error) {

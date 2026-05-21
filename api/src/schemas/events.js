@@ -56,7 +56,7 @@ export const EventInput = z.object({
         .toUpperCase()
         .length(3, "currency must be a 3-letter code"),
     description: z.string().trim().optional(),
-});
+}).strict();
 
 /**
  * Skeleton-ready body schema for partially updating an event.
@@ -68,7 +68,7 @@ export const EventInput = z.object({
  * - still applies the same type checks and conditions to provided fields
  * - throws a ZodError if any provided field is invalid
  */
-export const EventPatchInput = EventInput.partial();
+export const EventPatchInput = EventInput.partial().strict();
 
 /*
 Manual alternatives without a validation library:
