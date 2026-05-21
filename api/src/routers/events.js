@@ -6,6 +6,7 @@ import {
     patchEvent,
     removeEvent,
 } from "#controllers/events.js";
+import { requireAuth } from "#middlewares/auth.js";
 
 const eventsRouter = express.Router();
 
@@ -143,11 +144,15 @@ eventsRouter.get("/:id", getEventById);
  *     summary: Create event (optional/admin)
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     responses:
+ *       401:
+ *         description: Missing or invalid token
  *       501:
  *         description: Not implemented in base skeleton
  */
-eventsRouter.post("/", postEvent);
+eventsRouter.post("/", requireAuth, postEvent);
 
 /**
  * OPTIONAL ROUTE PLACEHOLDER
@@ -160,6 +165,8 @@ eventsRouter.post("/", postEvent);
  *     summary: Update event (optional/admin)
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -167,10 +174,12 @@ eventsRouter.post("/", postEvent);
  *         schema:
  *           type: integer
  *     responses:
+ *       401:
+ *         description: Missing or invalid token
  *       501:
  *         description: Not implemented in base skeleton
  */
-eventsRouter.patch("/:id", patchEvent);
+eventsRouter.patch("/:id", requireAuth, patchEvent);
 
 /**
  * OPTIONAL ROUTE PLACEHOLDER
@@ -183,6 +192,8 @@ eventsRouter.patch("/:id", patchEvent);
  *     summary: Delete event (optional/admin)
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -190,9 +201,11 @@ eventsRouter.patch("/:id", patchEvent);
  *         schema:
  *           type: integer
  *     responses:
+ *       401:
+ *         description: Missing or invalid token
  *       501:
  *         description: Not implemented in base skeleton
  */
-eventsRouter.delete("/:id", removeEvent);
+eventsRouter.delete("/:id", requireAuth, removeEvent);
 
 export default eventsRouter;
