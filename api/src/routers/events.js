@@ -32,6 +32,8 @@ const eventsRouter = express.Router();
  *     description: Returns a paginated list of events. Pagination is zero-based.
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -118,6 +120,8 @@ eventsRouter.get("/", getEvents);
  *     summary: Get event by ID
  *     tags:
  *       - Events
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
