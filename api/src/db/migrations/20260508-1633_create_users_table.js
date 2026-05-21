@@ -3,7 +3,7 @@
  */
 export async function up(knex) {
     await knex.schema.createTable("users", (t) => {
-        t.increments("id").primary();
+        t.specificType("id", "integer generated always as identity").primary();
         t.string("name", 50).notNullable();
         t.string("email", 50).notNullable().unique();
         t.string("password").notNullable();
