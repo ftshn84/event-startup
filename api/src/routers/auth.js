@@ -83,6 +83,7 @@ authRouter.post("/login", postLogin);
  * /api/auth/me:
  *   get:
  *     summary: Get current authenticated user
+ *     description: Use the accessToken returned by POST /api/auth/login or POST /api/auth/signup. In Swagger UI, click Authorize and paste accessToken.
  *     tags:
  *       - Auth
  *     security:
