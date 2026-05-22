@@ -3,27 +3,6 @@ import db from "#configs/database.js";
 const TABLE = "events";
 
 /**
- * Event model (MVC example)
- *
- * This file intentionally demonstrates how a model file can group multiple
- * database actions for the same domain entity inside an MVC-style structure.
- *
- * The trainee is not expected to already be familiar with MVC as a pattern,
- * but they are expected to continue working within the structure established
- * by this skeleton.
- *
- * For that reason, this file serves two purposes:
- * 1. provide working examples of how model functions are organized
- * 2. show the expected shape of a model as the project grows
- *
- * Important:
- * - Not every function in this file is part of the required trainee scope
- * - Some functions are included as placeholders to demonstrate structure only
- * - Optional placeholders should only be implemented if the trainee chooses
- *   to work on additional / optional features
- */
-
-/**
  * Returns a base query builder for the event table.
  *
  * @param {import("knex").Knex} [trx=db] - Optional transaction
@@ -92,7 +71,6 @@ export async function listEvents(filters = {}, options = {}) {
 
     const qb = baseQuery(trx).select("*");
 
-    // TODO (required project work): apply supported filters
 
     qb.orderBy(
         orderBy,
@@ -129,49 +107,5 @@ export async function findEventById(id, { trx } = {}) {
     return row ?? null;
 }
 
-/**
- * OPTIONAL STRUCTURE PLACEHOLDER
- *
- * This function is included to demonstrate that a model file in this project
- * may contain multiple actions for the same entity, not only "list" and "find".
- *
- * It is NOT part of the required trainee scope unless optional/admin features
- * are explicitly implemented.
- *
- * If optional admin functionality is added, this placeholder can be replaced
- * with a real implementation.
- */
-export async function createEvent() {
-    throw new Error(
-        "Optional placeholder: createEvent is intentionally not implemented in the base skeleton"
-    );
-}
 
-/**
- * OPTIONAL STRUCTURE PLACEHOLDER
- *
- * This function exists only as an example of expected MVC model structure for
- * future entity actions.
- *
- * It is NOT required for the base trainee project unless optional/admin scope
- * is added.
- */
-export async function updateEvent() {
-    throw new Error(
-        "Optional placeholder: updateEvent is intentionally not implemented in the base skeleton"
-    );
-}
 
-/**
- * OPTIONAL STRUCTURE PLACEHOLDER
- *
- * This function exists only to illustrate how additional model actions would
- * be placed in the same MVC model file.
- *
- * It is NOT part of the required trainee implementation in the default scope.
- */
-export async function deleteEvent() {
-    throw new Error(
-        "Optional placeholder: deleteEvent is intentionally not implemented in the base skeleton"
-    );
-}
