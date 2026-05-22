@@ -4,6 +4,7 @@ import {
     createUser,
     findUserByEmail,
 } from "#models/users.js";
+import { createCart } from "#models/cart.js";
 import {
     SignupInput,
     LoginInput,
@@ -125,4 +126,39 @@ export async function getMe(req, res, next) {
     res.json({
         data: req.authUser,
     });
+}
+
+function signGuestCartToken(cartId) {
+    return jwt.sign(
+        {
+            typ: "guest-cart",
+            cartId,
+        },
+        getJwtSecret(),
+        {
+            expiresIn: "30d",
+        }
+    );
+}
+
+export async function postGuest(req, res, next) {
+    void req;
+
+    try {
+        const cart = await createCart({ userId: null });
+
+        if (!cart) {
+            throw createHttpError(500, "Could not create guest cart");
+        }
+
+        const cartToken = signGuestCartToken(cart.id);
+
+        res.status(201).json({
+            data: {
+                cartToken,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
 }

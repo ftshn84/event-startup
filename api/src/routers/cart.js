@@ -18,7 +18,7 @@ cartRouter.use(optionalAuth);
  *     summary: Get the active cart (guest or authenticated)
  *     tags:
  *       - Cart
- *     description: For authenticated users, cart is resolved by user id. For guests, send x-cart-token header to load persisted guest cart.
+ *     description: For authenticated users, cart is resolved by user id. For guests, first create a token using POST /api/auth/guest, then send it in x-cart-token.
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -27,7 +27,7 @@ cartRouter.use(optionalAuth);
  *         required: false
  *         schema:
  *           type: string
- *         description: Guest cart token returned by previous cart responses
+ *         description: Guest cart token returned by POST /api/auth/guest
  *     responses:
  *       200:
  *         description: Active cart details
@@ -43,7 +43,7 @@ cartRouter.get("/", getCart);
  *     summary: Add an item to the active cart
  *     tags:
  *       - Cart
- *     description: Adds quantity for an event. If the event is already in cart, quantity is incremented.
+ *     description: Adds quantity for an event. If the event is already in cart, quantity is incremented. Guest users must send x-cart-token from POST /api/auth/guest.
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -52,7 +52,7 @@ cartRouter.get("/", getCart);
  *         required: false
  *         schema:
  *           type: string
- *         description: Guest cart token returned by previous cart responses
+ *         description: Guest cart token returned by POST /api/auth/guest
  *     requestBody:
  *       required: true
  *       content:
@@ -74,7 +74,7 @@ cartRouter.get("/", getCart);
  *       201:
  *         description: Item added and cart updated
  *       401:
- *         description: Invalid auth token or guest cart token
+ *         description: Missing or invalid auth token / guest cart token
  *       404:
  *         description: Event not found
  */
@@ -101,7 +101,7 @@ cartRouter.post("/items", postCartItem);
  *         required: false
  *         schema:
  *           type: string
- *         description: Guest cart token returned by previous cart responses
+ *         description: Guest cart token returned by POST /api/auth/guest
  *     requestBody:
  *       required: true
  *       content:
@@ -146,7 +146,7 @@ cartRouter.put("/items/:itemId", putCartItem);
  *         required: false
  *         schema:
  *           type: string
- *         description: Guest cart token returned by previous cart responses
+ *         description: Guest cart token returned by POST /api/auth/guest
  *     responses:
  *       200:
  *         description: Cart line removed

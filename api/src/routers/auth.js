@@ -3,6 +3,7 @@ import {
     postSignup,
     postLogin,
     getMe,
+    postGuest,
 } from "#controllers/auth.js";
 import { requireAuth } from "#middlewares/auth.js";
 
@@ -77,6 +78,36 @@ authRouter.post("/signup", postSignup);
  *         description: Invalid credentials
  */
 authRouter.post("/login", postLogin);
+
+/**
+ * @swagger
+ * /api/auth/guest:
+ *   post:
+ *     summary: Create guest cart session token
+ *     description: |
+ *       Creates an empty guest cart and returns a guest cart token.
+ *       Use this value as the x-cart-token header when calling cart endpoints as a guest user.
+ *       This endpoint is the only place where guest cart tokens are issued.
+ *     tags:
+ *       - Auth
+ *     responses:
+ *       201:
+ *         description: Guest cart token created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     cartToken:
+ *                       type: string
+ *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       500:
+ *         description: Server error while creating guest cart
+ */
+authRouter.post("/guest", postGuest);
 
 /**
  * @swagger

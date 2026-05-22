@@ -40,17 +40,6 @@ function getJwtSecret() {
     return secret;
 }
 
-function signCartToken(cartId) {
-    return jwt.sign(
-        {
-            typ: "guest-cart",
-            cartId,
-        },
-        getJwtSecret(),
-        { expiresIn: "30d" }
-    );
-}
-
 function parseGuestCartToken(token) {
     if (!token) {
         return null;
@@ -100,22 +89,14 @@ async function resolveCartContext(req, { createWhenMissing = false, trx } = {}) 
         cart = await findOpenGuestCartById(guestCartId, { trx });
     }
 
-    if (!cart && createWhenMissing) {
-        cart = await createCart({ userId: null }, { trx });
-    }
-
     return {
         cart,
         isGuest: true,
-        cartToken: cart ? signCartToken(cart.id) : null,
+        cartToken: incomingToken ?? null,
     };
 }
 
 function sendCartResponse(res, payload, status = 200) {
-    if (payload.cartToken) {
-        res.setHeader(CART_TOKEN_HEADER, payload.cartToken);
-    }
-
     return res.status(status).json({
         data: {
             cart: payload.cart,
@@ -170,6 +151,13 @@ export async function postCartItem(req, res, next) {
                 createWhenMissing: true,
                 trx,
             });
+
+            if (context.isGuest && !context.cart) {
+                throw createHttpError(
+                    401,
+                    "Guest cart token is required. Create one using POST /api/auth/guest"
+                );
+            }
 
             const existingLine = await findCartItemByEventId(context.cart.id, input.eventId, {
                 trx,
