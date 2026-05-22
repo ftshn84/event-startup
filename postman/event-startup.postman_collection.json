@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "90e4b534-d415-455f-ab8e-b82df7413d67",
+    "_postman_id": "d1c03664-bc68-4e0d-8bbf-0c532587c1d4",
     "name": "event-startup",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "50815654",
-    "_collection_link": "https://go.postman.co/collection/50815654-90e4b534-d415-455f-ab8e-b82df7413d67?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/50815654-d1c03664-bc68-4e0d-8bbf-0c532587c1d4?source=collection_link"
   },
   "item": [
     {
@@ -12,48 +12,49 @@
       "item": [
         {
           "name": "Signup",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"StrongPass123\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const uniqueEmail = `testuser_${Date.now()}@example.com`;",
+                  "pm.collectionVariables.set(\"signupEmail\", uniqueEmail);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             },
-            "url": {
-              "raw": "http://localhost:3001/api/auth/signup",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "3001",
-              "path": [
-                "api",
-                "auth",
-                "signup"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Login",
-          "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "const json = pm.response.json();",
-                  "pm.collectionVariables.set(\"accessToken\", json.data.accessToken);"
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success status\", function () {",
+                  "    pm.expect(response).to.have.property(\"data\");",
+                  "    pm.expect(response.data).to.have.property(\"tokenType\");",
+                  "    pm.expect(response.data.tokenType).to.eql(\"Bearer\");",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains user data\", function () {",
+                  "    pm.expect(response).to.have.property(\"data\");",
+                  "    pm.expect(response.data).to.be.an(\"object\");",
+                  "});",
+                  "",
+                  "pm.test(\"User email is present\", function () {",
+                  "    const email = response.data?.email || response.data?.user?.email;",
+                  "    pm.expect(email).to.be.a(\"string\");",
+                  "    pm.expect(email).to.include(\"@\");",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is acceptable\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -66,12 +67,13 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "application/json",
+                "disabled": false
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"StrongPass123\"\n}",
+              "raw": "{\r\n    \"email\": \"{{signupEmail}}\", \r\n    \"password\": \"StrongPass123\", \r\n    \"name\": \"Test User\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -79,23 +81,148 @@
               }
             },
             "url": {
-              "raw": "http://localhost:3001/api/auth/login",
-              "protocol": "http",
+              "raw": "{{baseUrl}}/api/auth/signup",
               "host": [
-                "localhost"
+                "{{baseUrl}}"
               ],
-              "port": "3001",
+              "path": [
+                "api",
+                "auth",
+                "signup"
+              ]
+            },
+            "description": "Generated from cURL: curl -X POST http://localhost:3001/api/auth/signup -H \"Content-Type: application/json\" -d '{\"email\": \"test@example.com\", \"password\": \"StrongPass123\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "const token = response.data?.accessToken;",
+                  "if (token) {",
+                  "    pm.environment.set(\"accessToken\", token);",
+                  "    pm.collectionVariables.set(\"accessToken\", token);",
+                  "    console.log(\"Access token saved successfully\");",
+                  "} else {",
+                  "    console.warn(\"No token found in response\");",
+                  "}",
+                  "",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success status\", function () {",
+                  "    pm.expect(response).to.have.property(\"data\");",
+                  "    pm.expect(response.data).to.have.property(\"tokenType\");",
+                  "    pm.expect(response.data.tokenType).to.eql(\"Bearer\");",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains access token\", function () {",
+                  "    pm.expect(response).to.have.property(\"data\");",
+                  "    pm.expect(response.data).to.have.property(\"accessToken\");",
+                  "    pm.expect(response.data.accessToken).to.be.a(\"string\");",
+                  "    pm.expect(response.data.accessToken).to.have.length.above(0);",
+                  "});",
+                  "",
+                  "pm.test(\"Access token was saved to environment\", function () {",
+                  "    const savedToken = pm.environment.get(\"accessToken\") || pm.collectionVariables.get(\"accessToken\");",
+                  "    pm.expect(savedToken).to.be.a(\"string\");",
+                  "    pm.expect(savedToken).to.have.length.above(0);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is acceptable\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"{{signupEmail}}\",\r\n    \"password\": \"StrongPass123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
               "path": [
                 "api",
                 "auth",
                 "login"
               ]
-            }
+            },
+            "description": "Generated from cURL: curl -X POST http://localhost:3001/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\": \"test@example.com\", \"password\": \"StrongPass123\"}'"
           },
           "response": []
         },
         {
           "name": "Me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has user data\", function () {",
+                  "    pm.expect(response).to.have.property(\"data\");",
+                  "    pm.expect(response.data).to.be.an(\"object\");",
+                  "});",
+                  "",
+                  "pm.test(\"User id is present\", function () {",
+                  "    const id = response.data?.id || response.data?.user?.id;",
+                  "    pm.expect(id).to.exist;",
+                  "});",
+                  "",
+                  "pm.test(\"User email is present\", function () {",
+                  "    const email = response.data?.email || response.data?.user?.email;",
+                  "    pm.expect(email).to.be.a(\"string\");",
+                  "    pm.expect(email).to.include(\"@\");",
+                  "});",
+                  "",
+                  "pm.test(\"User name is present\", function () {",
+                  "    const name = response.data?.name || response.data?.user?.name;",
+                  "    pm.expect(name).to.be.a(\"string\");",
+                  "    pm.expect(name).to.have.length.above(0);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is acceptable\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
@@ -110,38 +237,231 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3001/api/auth/me",
-              "protocol": "http",
+              "raw": "{{baseUrl}}/api/auth/me",
               "host": [
-                "localhost"
+                "{{baseUrl}}"
               ],
-              "port": "3001",
               "path": [
                 "api",
                 "auth",
                 "me"
               ]
+            },
+            "description": "Generated from cURL: curl -X GET http://localhost:3001/api/auth/me -H \"Authorization: Bearer {{accessToken}}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Guest",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has data object\", function () {",
+                  "    pm.expect(response).to.have.property(\"data\");",
+                  "    pm.expect(response.data).to.be.an(\"object\");",
+                  "});",
+                  "",
+                  "pm.test(\"Cart token is present\", function () {",
+                  "    pm.expect(response.data).to.have.property(\"cartToken\");",
+                  "    pm.expect(response.data.cartToken).to.be.a(\"string\");",
+                  "    pm.expect(response.data.cartToken).to.have.length.above(0);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is acceptable\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
             }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/guest",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "guest"
+              ]
+            },
+            "description": "Generated from cURL: curl -X GET http://localhost:3001/api/auth/me -H \"Authorization: Bearer {{accessToken}}\""
           },
           "response": []
         }
       ]
     },
     {
-      "name": "events",
+      "name": "Events",
       "item": [
         {
-          "name": "events",
+          "name": "event by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has event data\", function () {",
+                  "    pm.expect(response).to.have.property(\"data\");",
+                  "    pm.expect(response.data).to.be.an(\"object\");",
+                  "});",
+                  "",
+                  "pm.test(\"Event has required fields\", function () {",
+                  "    pm.expect(response.data).to.have.property(\"id\");",
+                  "    pm.expect(response.data).to.have.property(\"title\");",
+                  "    pm.expect(response.data).to.have.property(\"description\");",
+                  "    pm.expect(response.data).to.have.property(\"date\");",
+                  "    pm.expect(response.data).to.have.property(\"venue\");",
+                  "    pm.expect(response.data).to.have.property(\"price\");",
+                  "    pm.expect(response.data).to.have.property(\"capacity\");",
+                  "});",
+                  "",
+                  "pm.test(\"Event id is a number\", function () {",
+                  "    pm.expect(response.data.id).to.be.a(\"number\");",
+                  "});",
+                  "",
+                  "pm.test(\"Event title is a non-empty string\", function () {",
+                  "    pm.expect(response.data.title).to.be.a(\"string\");",
+                  "    pm.expect(response.data.title).to.have.length.above(0);",
+                  "});",
+                  "",
+                  "pm.test(\"Event price is a valid value\", function () {",
+                  "    const price = parseFloat(response.data.price);",
+                  "    pm.expect(price).to.be.a(\"number\");",
+                  "    pm.expect(price).to.be.at.least(0);",
+                  "});",
+                  "",
+                  "pm.test(\"Event capacity is a positive number\", function () {",
+                  "    pm.expect(response.data.capacity).to.be.a(\"number\");",
+                  "    pm.expect(response.data.capacity).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is acceptable\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
+            "auth": {
+              "type": "noauth"
+            },
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3001/api/events?pageSize=2&page=3",
-              "protocol": "http",
+              "raw": "{{baseUrl}}/api/events/1",
               "host": [
-                "localhost"
+                "{{baseUrl}}"
               ],
-              "port": "3001",
+              "path": [
+                "api",
+                "events",
+                "1"
+              ]
+            },
+            "description": "Generated from cURL: curl -X GET \"http://localhost:3001/api/events/1\""
+          },
+          "response": []
+        },
+        {
+          "name": "events",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has data array\", function () {",
+                  "    pm.expect(response).to.have.property(\"data\");",
+                  "    pm.expect(response.data).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "pm.test(\"Data array is not empty\", function () {",
+                  "    pm.expect(response.data.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test(\"Pagination returns correct page size\", function () {",
+                  "    pm.expect(response.data.length).to.be.at.most(2);",
+                  "});",
+                  "",
+                  "pm.test(\"Each event has required fields\", function () {",
+                  "    response.data.forEach(function (event) {",
+                  "        pm.expect(event).to.have.property(\"id\");",
+                  "        pm.expect(event).to.have.property(\"title\");",
+                  "        pm.expect(event).to.have.property(\"description\");",
+                  "        pm.expect(event).to.have.property(\"date\");",
+                  "        pm.expect(event).to.have.property(\"venue\");",
+                  "        pm.expect(event).to.have.property(\"price\");",
+                  "        pm.expect(event).to.have.property(\"capacity\");",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test(\"Each event id is a number\", function () {",
+                  "    response.data.forEach(function (event) {",
+                  "        pm.expect(event.id).to.be.a(\"number\");",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test(\"Each event title is a non-empty string\", function () {",
+                  "    response.data.forEach(function (event) {",
+                  "        pm.expect(event.title).to.be.a(\"string\");",
+                  "        pm.expect(event.title).to.have.length.above(0);",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is acceptable\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events?pageSize=2&page=3",
+              "host": [
+                "{{baseUrl}}"
+              ],
               "path": [
                 "api",
                 "events"
@@ -149,123 +469,25 @@
               "query": [
                 {
                   "key": "pageSize",
-                  "value": "2",
-                  "type": "text"
+                  "value": "2"
                 },
                 {
                   "key": "page",
-                  "value": "3",
-                  "type": "text"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "event by id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:3001/api/events/1",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "3001",
-              "path": [
-                "api",
-                "events",
-                "1"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "create event",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
+                  "value": "3"
                 }
               ]
             },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}",
-                "disabled": false
-              }
-            ],
-            "url": {
-              "raw": "http://localhost:3001/api/events",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "3001",
-              "path": [
-                "api",
-                "events"
-              ]
-            },
-            "description": "Generated from cURL: curl -X POST http://localhost:3001/api/events -H \"Authorization: Bearer {{accessToken}}\""
+            "description": "Generated from cURL: curl -X GET \"http://localhost:3001/api/events?pageSize=2&page=3\""
           },
           "response": []
-        },
+        }
+      ]
+    },
+    {
+      "name": "Cart-User",
+      "item": [
         {
-          "name": "update event",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}",
-                "disabled": false
-              }
-            ],
-            "url": {
-              "raw": "http://localhost:3001/api/events/:id",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "3001",
-              "path": [
-                "api",
-                "events",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": ""
-                }
-              ]
-            },
-            "description": "Generated from cURL: curl -X PATCH http://localhost:3001/api/events/:id -H \"Authorization: Bearer {{accessToken}}\""
-          },
-          "response": []
-        },
-        {
-          "name": "delete event",
+          "name": "delete cart item",
           "request": {
             "auth": {
               "type": "bearer",
@@ -278,40 +500,445 @@
               ]
             },
             "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/items/19",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "items",
+                "19"
+              ]
+            },
+            "description": "Generated from cURL: curl -X DELETE \"{{baseUrl}}/api/cart/items/{{cartItemId}}\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\""
+          },
+          "response": []
+        },
+        {
+          "name": "update cart item",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"quantity\": 5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/items/19",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "items",
+                "19"
+              ]
+            },
+            "description": "Generated from cURL: curl -X PUT \"{{baseUrl}}/api/cart/items/{{cartItemId}}\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\" -d \"{\\\"quantity\\\": 1}\""
+          },
+          "response": []
+        },
+        {
+          "name": "add cart item",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "",
+                  "// Capture cartToken from response — store in BOTH collection variables and environment",
+                  "// so it stays in sync with cartItemId across individual requests and collection runs",
+                  "if (json.data && json.data.cartToken) {",
+                  "    pm.collectionVariables.set(\"cartToken\", json.data.cartToken);",
+                  "    pm.environment.set(\"cartToken\", json.data.cartToken);",
+                  "}",
+                  "",
+                  "// Capture the cart item id for use in update/delete cart item requests",
+                  "// Response shape: json.data.cart.items[last].itemId",
+                  "if (json.data && json.data.cart && json.data.cart.items && json.data.cart.items.length > 0) {",
+                  "    const addedItem = json.data.cart.items[json.data.cart.items.length - 1];",
+                  "    pm.environment.set(\"cartItemId\", addedItem.itemId);",
+                  "}",
+                  "",
+                  "// Test: item was added successfully",
+                  "pm.test(\"POST /api/cart/items returns 200 or 201\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "// Test: response has cart data",
+                  "pm.test(\"Response has cart data\", function () {",
+                  "    pm.expect(json).to.have.property(\"data\");",
+                  "    pm.expect(json.data).to.have.property(\"cart\");",
+                  "});",
+                  "",
+                  "// Test: cartItemId was captured",
+                  "pm.test(\"cartItemId is set\", function () {",
+                  "    const cartItemId = pm.environment.get(\"cartItemId\");",
+                  "    pm.expect(cartItemId).to.not.be.undefined;",
+                  "    pm.expect(cartItemId).to.not.be.null;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": 1,\n  \"quantity\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "items"
+              ]
+            },
+            "description": "Generated from cURL: curl -X POST \"{{baseUrl}}/api/cart/items\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\" -d \"{\\n  \\\"eventId\\\": {{itemId}},\\n  \\\"quantity\\\": 1\\n}\""
+          },
+          "response": []
+        },
+        {
+          "name": "get cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "",
+                  "// Capture cartToken from response if present (guest flow)",
+                  "if (json.data && json.data.cartToken) {",
+                  "    pm.collectionVariables.set(\"cartToken\", json.data.cartToken);",
+                  "}",
+                  "",
+                  "// Test: response is successful",
+                  "pm.test(\"GET /api/cart returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Test: cartToken is null or a string (null for unauthenticated/guest requests)",
+                  "pm.test(\"cartToken is null or a string in response\", function () {",
+                  "    const token = json.data.cartToken;",
+                  "    pm.expect(token === null || typeof token === \"string\").to.be.true;",
+                  "});",
+                  "",
+                  "// Test: response has cart data",
+                  "pm.test(\"Response has cart data\", function () {",
+                  "    pm.expect(json).to.have.property(\"data\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            },
+            "description": "Generated from cURL: curl -X GET \"{{baseUrl}}/api/cart\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cart-Guest",
+      "item": [
+        {
+          "name": "delete cart item",
+          "request": {
+            "method": "DELETE",
             "header": [
               {
                 "key": "Authorization",
                 "value": "Bearer {{accessToken}}",
                 "disabled": false
+              },
+              {
+                "key": "x-cart-token",
+                "value": "{{cartToken}}",
+                "disabled": false
               }
             ],
             "url": {
-              "raw": "http://localhost:3001/api/events/:id",
-              "protocol": "http",
+              "raw": "{{baseUrl}}/api/cart/items/{{cartItemId}}",
               "host": [
-                "localhost"
+                "{{baseUrl}}"
               ],
-              "port": "3001",
               "path": [
                 "api",
-                "events",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": ""
-                }
+                "cart",
+                "items",
+                "{{cartItemId}}"
               ]
             },
-            "description": "Generated from cURL: curl -X DELETE http://localhost:3001/api/events/:id -H \"Authorization: Bearer {{accessToken}}\""
+            "description": "Generated from cURL: curl -X DELETE \"{{baseUrl}}/api/cart/items/{{cartItemId}}\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\""
+          },
+          "response": []
+        },
+        {
+          "name": "update cart item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "disabled": true
+              },
+              {
+                "key": "x-cart-token",
+                "value": "{{cartToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"quantity\": 1}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/items/{{cartItemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "items",
+                "{{cartItemId}}"
+              ]
+            },
+            "description": "Generated from cURL: curl -X PUT \"{{baseUrl}}/api/cart/items/{{cartItemId}}\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\" -d \"{\\\"quantity\\\": 1}\""
+          },
+          "response": []
+        },
+        {
+          "name": "add cart item",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": 2,\n  \"quantity\": 6\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "items"
+              ]
+            },
+            "description": "Generated from cURL: curl -X POST \"{{baseUrl}}/api/cart/items\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\" -d \"{\\n  \\\"eventId\\\": {{itemId}},\\n  \\\"quantity\\\": 1\\n}\""
+          },
+          "response": []
+        },
+        {
+          "name": "get cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "",
+                  "// Capture cartToken from response if present (guest flow)",
+                  "if (json.data && json.data.cartToken) {",
+                  "    pm.collectionVariables.set(\"cartToken\", json.data.cartToken);",
+                  "}",
+                  "",
+                  "// Test: response is successful",
+                  "pm.test(\"GET /api/cart returns 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Test: cartToken is null or a string (null for unauthenticated/guest requests)",
+                  "pm.test(\"cartToken is null or a string in response\", function () {",
+                  "    const token = json.data.cartToken;",
+                  "    pm.expect(token === null || typeof token === \"string\").to.be.true;",
+                  "});",
+                  "",
+                  "// Test: response has cart data",
+                  "pm.test(\"Response has cart data\", function () {",
+                  "    pm.expect(json).to.have.property(\"data\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-cart-token",
+                "value": "qq",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            },
+            "description": "Generated from cURL: curl -X GET \"{{baseUrl}}/api/cart\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\""
           },
           "response": []
         }
       ]
     }
   ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Collection-level pre-request script",
+          "// Add Authorization header for auth flow requests",
+          "// pm.request.headers.add({ key: \"Authorization\", value: \"Bearer \" + pm.collectionVariables.get(\"accessToken\") });"
+        ]
+      }
+    }
+  ],
   "variable": [
+    {
+      "key": "cartToken",
+      "value": ""
+    },
+    {
+      "key": "signupEmail",
+      "value": ""
+    },
     {
       "key": "accessToken",
       "value": ""
