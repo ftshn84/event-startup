@@ -3,7 +3,7 @@
  */
 export async function up(knex) {
     await knex.schema.createTable("events", (t) => {
-        t.increments("id").primary();
+        t.specificType("id", "integer generated always as identity").primary();
         t.string("title").notNullable();
         t.text("description");
         t.dateTime("date").notNullable();

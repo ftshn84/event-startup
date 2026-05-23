@@ -3,7 +3,7 @@
  */
 export async function up(knex) {
     await knex.schema.createTable("orders", (t) => {
-        t.increments("id").primary();
+        t.specificType("id", "integer generated always as identity").primary();
         t.integer("user_id")
             .unsigned()
             .references("id")

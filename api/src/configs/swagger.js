@@ -15,6 +15,15 @@ const swaggerOptions = {
             version: process.env.APP_VERSION ?? "0.0.1",
             description: "API documentation",
         },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: "http",
+                    scheme: "bearer",
+                    bearerFormat: "JWT",
+                },
+            },
+        },
     },
     apis: ["./src/routers/**/*.js", "./src/routers/*.js"],
 };
