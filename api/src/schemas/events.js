@@ -13,8 +13,9 @@ import { z } from "zod";
  * - throws a ZodError when a type or condition is not met
  */
 export const EventListQuery = z.object({
-    page: z.coerce.number().int().min(0).default(0),
+    page: z.coerce.number().int().min(1).default(1),
     pageSize: z.coerce.number().int().min(1).max(100).default(20),
+    q: z.string().trim().min(1).max(120).optional(),
 });
 
 /**

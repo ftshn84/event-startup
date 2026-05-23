@@ -1,4 +1,3 @@
-import { requireAuth } from "#middlewares/auth.js";
 import express from "express";
 import { getEvents, getEventById } from "#controllers/events.js";
 
@@ -8,7 +7,7 @@ const eventsRouter = express.Router();
  * /api/events:
  *   get:
  *     summary: Get paginated list of events
- *     description: Returns a paginated list of events. Pagination is zero-based.
+ *     description: Returns a paginated list of events. Pagination is one-based.
  *     tags:
  *       - Events
  *     parameters:
@@ -16,18 +15,24 @@ const eventsRouter = express.Router();
  *         name: page
  *         schema:
  *           type: integer
- *           minimum: 0
- *           default: 0
+ *           minimum: 1
+ *           default: 1
  *         required: false
- *         description: Page number (zero-based)
+ *         description: Page number (one-based)
  *       - in: query
  *         name: pageSize
  *         schema:
  *           type: integer
- *           minimum: 0
- *           default: 0
+ *           minimum: 1
+ *           default: 20
  *         required: false
  *         description: Number of items per page
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Case-insensitive search across title, description, and venue
  *     responses:
  *       200:
  *         description: Paginated list of events
@@ -67,7 +72,7 @@ const eventsRouter = express.Router();
  *                   properties:
  *                     page:
  *                       type: integer
- *                       example: 0
+ *                       example: 1
  *                     pageSize:
  *                       type: integer
  *                       example: 5
