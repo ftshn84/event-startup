@@ -10,12 +10,20 @@ import {
     EventPatchInput,
 } from "#schemas/events.js";
 
+function createHttpError(status, message) {
+    const error = new Error(message);
+    error.status = status;
+    return error;
+}
+
 export async function getEvents(req, res, next) {
     try {
-        const { page, pageSize } = EventListQuery.parse(req.query);
-        const offset = page * pageSize;
+        const { page, pageSize, q } = EventListQuery.parse(req.query);
+        const offset = (page - 1) * pageSize;
 
-        const filters = {};
+        const filters = {
+            search: q,
+        };
 
         const data = await listEvents(filters, {
             limit: pageSize,
@@ -47,9 +55,7 @@ export async function getEventById(req, res, next) {
         const event = await findEventById(id);
 
         if (!event) {
-            return res.status(404).json({
-                error: "Event not found",
-            });
+            throw createHttpError(404, "Event not found");
         }
 
         res.json({ data: event });

@@ -12,6 +12,19 @@ function baseQuery(trx = db) {
     return trx(TABLE);
 }
 
+function applyEventFilters(qb, filters = {}) {
+    if (filters.search) {
+        const term = `%${filters.search}%`;
+
+        qb.where((nested) => {
+            nested
+                .whereILike("title", term)
+                .orWhereILike("description", term)
+                .orWhereILike("venue", term);
+        });
+    }
+}
+
 /**
  * Count events matching optional filters.
  *
@@ -27,8 +40,7 @@ function baseQuery(trx = db) {
 export async function countEvents(filters = {}, options = {}) {
     const { trx } = options;
     const qb = baseQuery(trx);
-
-    // TODO (required project work): apply supported filters when filter features are implemented
+    applyEventFilters(qb, filters);
 
     const row = await qb.count({ count: "*" }).first();
     const count = row?.count ?? row?.["count(*)"] ?? 0;
@@ -70,7 +82,7 @@ export async function listEvents(filters = {}, options = {}) {
     } = options;
 
     const qb = baseQuery(trx).select("*");
-
+    applyEventFilters(qb, filters);
 
     qb.orderBy(
         orderBy,
