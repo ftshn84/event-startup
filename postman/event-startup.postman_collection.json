@@ -369,14 +369,14 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/events/15",
+              "raw": "{{baseUrl}}/api/events/30",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "events",
-                "15"
+                "30"
               ]
             },
             "description": "Generated from cURL: curl -X GET \"http://localhost:3001/api/events/1\""
@@ -451,7 +451,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/events?pageSize=2&page=3",
+              "raw": "{{baseUrl}}/api/events?q=photo&page=1&pageSize=3",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -461,11 +461,15 @@
               ],
               "query": [
                 {
-                  "key": "pageSize",
-                  "value": "2"
+                  "key": "q",
+                  "value": "photo"
                 },
                 {
                   "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
                   "value": "3"
                 }
               ]
@@ -479,6 +483,40 @@
     {
       "name": "Cart-User",
       "item": [
+        {
+          "name": "Checkout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-cart-token",
+                "value": "{{cartToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/checkout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "checkout"
+              ]
+            }
+          },
+          "response": []
+        },
         {
           "name": "delete cart item",
           "request": {
@@ -495,7 +533,7 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/cart/items/22",
+              "raw": "{{baseUrl}}/api/cart/items/34",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -503,7 +541,7 @@
                 "api",
                 "cart",
                 "items",
-                "22"
+                "34"
               ]
             },
             "description": "Generated from cURL: curl -X DELETE \"{{baseUrl}}/api/cart/items/{{cartItemId}}\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\""
@@ -535,7 +573,7 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/cart/items/25",
+              "raw": "{{baseUrl}}/api/cart/items/34",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -543,7 +581,7 @@
                 "api",
                 "cart",
                 "items",
-                "25"
+                "34"
               ]
             },
             "description": "Generated from cURL: curl -X PUT \"{{baseUrl}}/api/cart/items/{{cartItemId}}\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\" -d \"{\\\"quantity\\\": 1}\""
@@ -611,7 +649,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"eventId\": 1,\n  \"quantity\": 3\n}",
+              "raw": "{\n  \"eventId\": 30,\n  \"quantity\": 3\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -693,40 +731,6 @@
               ]
             },
             "description": "Generated from cURL: curl -X GET \"{{baseUrl}}/api/cart\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\""
-          },
-          "response": []
-        },
-        {
-          "name": "Checkout",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "x-cart-token",
-                "value": "{{cartToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/cart/checkout",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "cart",
-                "checkout"
-              ]
-            }
           },
           "response": []
         }
@@ -979,14 +983,14 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/orders/26",
+              "raw": "{{baseUrl}}/api/orders/39",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "orders",
-                "26"
+                "39"
               ]
             }
           },
