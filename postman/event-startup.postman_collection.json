@@ -369,14 +369,14 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/events/1",
+              "raw": "{{baseUrl}}/api/events/15",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "events",
-                "1"
+                "15"
               ]
             },
             "description": "Generated from cURL: curl -X GET \"http://localhost:3001/api/events/1\""
