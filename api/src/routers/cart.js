@@ -4,6 +4,7 @@ import {
     postCartItem,
     putCartItem,
     deleteCartItemById,
+    postCheckout,
 } from "#controllers/cart.js";
 import { optionalAuth } from "#middlewares/auth.js";
 
@@ -156,5 +157,27 @@ cartRouter.put("/items/:itemId", putCartItem);
  *         description: Cart or cart item not found
  */
 cartRouter.delete("/items/:itemId", deleteCartItemById);
+
+/**
+ * @swagger
+ * /api/cart/checkout:
+ *   post:
+ *     summary: Finalize the authenticated user's active cart
+ *     tags:
+ *       - Cart
+ *     description: Marks the current authenticated user's open cart as paid. Once checked out, that order is no longer editable through cart endpoints.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Cart finalized into a completed order
+ *       400:
+ *         description: Cart is empty
+ *       401:
+ *         description: Authentication required
+ *       404:
+ *         description: Active cart not found
+ */
+cartRouter.post("/checkout", postCheckout);
 
 export default cartRouter;

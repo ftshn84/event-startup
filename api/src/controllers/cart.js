@@ -5,10 +5,12 @@ import {
     createCart,
     createCartItem,
     deleteCartItem,
+    finalizeCart,
     findCartItemByEventId,
     findCartItemById,
     findOpenCartByUserId,
     findOpenGuestCartById,
+    getCompletedOrderWithItems,
     getCartWithItems,
     recalculateCartTotal,
     updateCartItemQuantity,
@@ -259,6 +261,44 @@ export async function deleteCartItemById(req, res, next) {
         });
 
         return sendCartResponse(res, result);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function postCheckout(req, res, next) {
+    try {
+        if (!req.authUser) {
+            throw createHttpError(401, "Authentication is required to checkout");
+        }
+
+        const order = await db.transaction(async (trx) => {
+            const cart = await findOpenCartByUserId(req.authUser.id, { trx });
+
+            if (!cart) {
+                throw createHttpError(404, "Active cart not found");
+            }
+
+            const cartWithItems = await getCartWithItems(cart.id, { trx });
+
+            if (!cartWithItems || cartWithItems.items.length === 0) {
+                throw createHttpError(400, "Cannot checkout an empty cart");
+            }
+
+            const finalizedOrder = await finalizeCart(cart.id, req.authUser.id, { trx });
+
+            if (!finalizedOrder) {
+                throw createHttpError(409, "Cart could not be finalized");
+            }
+
+            return getCompletedOrderWithItems(finalizedOrder.id, req.authUser.id, { trx });
+        });
+
+        res.status(200).json({
+            data: {
+                order,
+            },
+        });
     } catch (error) {
         next(error);
     }
