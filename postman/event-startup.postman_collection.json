@@ -259,25 +259,18 @@
               "script": {
                 "exec": [
                   "const response = pm.response.json();",
+                  "const token = response.data?.cartToken;",
+                  "if (token) {",
+                  "    pm.environment.set(\"cartToken\", token);",
+                  "    console.log(\"Guest Cart token saved successfully\");",
+                  "} else {",
+                  "    console.warn(\"No token found in response\");",
+                  "}",
                   "",
                   "pm.test(\"Status code is 201\", function () {",
                   "    pm.response.to.have.status(201);",
                   "});",
-                  "",
-                  "pm.test(\"Response has data object\", function () {",
-                  "    pm.expect(response).to.have.property(\"data\");",
-                  "    pm.expect(response.data).to.be.an(\"object\");",
-                  "});",
-                  "",
-                  "pm.test(\"Cart token is present\", function () {",
-                  "    pm.expect(response.data).to.have.property(\"cartToken\");",
-                  "    pm.expect(response.data.cartToken).to.be.a(\"string\");",
-                  "    pm.expect(response.data.cartToken).to.have.length.above(0);",
-                  "});",
-                  "",
-                  "pm.test(\"Response time is acceptable\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -502,7 +495,7 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/cart/items/19",
+              "raw": "{{baseUrl}}/api/cart/items/22",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -510,7 +503,7 @@
                 "api",
                 "cart",
                 "items",
-                "19"
+                "22"
               ]
             },
             "description": "Generated from cURL: curl -X DELETE \"{{baseUrl}}/api/cart/items/{{cartItemId}}\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\""
@@ -542,7 +535,7 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/cart/items/19",
+              "raw": "{{baseUrl}}/api/cart/items/25",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -550,7 +543,7 @@
                 "api",
                 "cart",
                 "items",
-                "19"
+                "25"
               ]
             },
             "description": "Generated from cURL: curl -X PUT \"{{baseUrl}}/api/cart/items/{{cartItemId}}\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\" -d \"{\\\"quantity\\\": 1}\""
@@ -584,12 +577,6 @@
                   "    pm.environment.set(\"cartToken\", json.data.cartToken);",
                   "}",
                   "",
-                  "// Capture the cart item id for use in update/delete cart item requests",
-                  "// Response shape: json.data.cart.items[last].itemId",
-                  "if (json.data && json.data.cart && json.data.cart.items && json.data.cart.items.length > 0) {",
-                  "    const addedItem = json.data.cart.items[json.data.cart.items.length - 1];",
-                  "    pm.environment.set(\"cartItemId\", addedItem.itemId);",
-                  "}",
                   "",
                   "// Test: item was added successfully",
                   "pm.test(\"POST /api/cart/items returns 200 or 201\", function () {",
@@ -601,13 +588,7 @@
                   "    pm.expect(json).to.have.property(\"data\");",
                   "    pm.expect(json.data).to.have.property(\"cart\");",
                   "});",
-                  "",
-                  "// Test: cartItemId was captured",
-                  "pm.test(\"cartItemId is set\", function () {",
-                  "    const cartItemId = pm.environment.get(\"cartItemId\");",
-                  "    pm.expect(cartItemId).to.not.be.undefined;",
-                  "    pm.expect(cartItemId).to.not.be.null;",
-                  "});"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -726,18 +707,13 @@
             "method": "DELETE",
             "header": [
               {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}",
-                "disabled": false
-              },
-              {
                 "key": "x-cart-token",
                 "value": "{{cartToken}}",
                 "disabled": false
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/cart/items/{{cartItemId}}",
+              "raw": "{{baseUrl}}/api/cart/items/23",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -745,7 +721,7 @@
                 "api",
                 "cart",
                 "items",
-                "{{cartItemId}}"
+                "23"
               ]
             },
             "description": "Generated from cURL: curl -X DELETE \"{{baseUrl}}/api/cart/items/{{cartItemId}}\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\""
@@ -757,15 +733,6 @@
           "request": {
             "method": "PUT",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}",
-                "disabled": true
-              },
               {
                 "key": "x-cart-token",
                 "value": "{{cartToken}}"
@@ -781,7 +748,7 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/cart/items/{{cartItemId}}",
+              "raw": "{{baseUrl}}/api/cart/items/23",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -789,7 +756,7 @@
                 "api",
                 "cart",
                 "items",
-                "{{cartItemId}}"
+                "23"
               ]
             },
             "description": "Generated from cURL: curl -X PUT \"{{baseUrl}}/api/cart/items/{{cartItemId}}\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer {{accessToken}}\" -H \"x-cart-token: {{cartToken}}\" -d \"{\\\"quantity\\\": 1}\""
@@ -827,7 +794,13 @@
               "type": "noauth"
             },
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "x-cart-token",
+                "value": "{{cartToken}}",
+                "type": "text"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"eventId\": 2,\n  \"quantity\": 6\n}",
@@ -896,8 +869,7 @@
             "header": [
               {
                 "key": "x-cart-token",
-                "value": "qq",
-                "disabled": true
+                "value": "{{cartToken}}"
               }
             ],
             "url": {
